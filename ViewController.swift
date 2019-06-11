@@ -18,49 +18,18 @@ class ViewController: UIViewController {
     }
     
     @IBAction func qrcodeGenerate(_ sender: Any) {
-        
-        
         let inputUrl = "https://www.appcoda.com.tw/qr-code-generator-tutorial/"
-        let  data = inputUrl.data(using: .utf8, allowLossyConversion: false)
-        let filter = CIFilter(name: "CIQRCodeGenerator")
-        filter?.setValue(data, forKey: "inputMessage")
-        filter?.setValue("H", forKey: "inputCorrectionLevel")
-        if let qrCodeImge = filter?.outputImage {
-            let colorFilter = self.setQrcodeColor(qrCode: qrCodeImge)
-            let colorFulImage = colorFilter.outputImage
-            
-            let scaleX = self.qrCodeResult.frame.size.width / qrCodeImge.extent.size.width
-            let scaleY = self.qrCodeResult.frame.size.height / qrCodeImge.extent.size.height
-            if  let transformedImage = colorFulImage?.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY)) {
-                let image = UIImage(ciImage: transformedImage)
-                
-                self.qrCodeResult.image = drawIconInQrcode(IconName: "hk.jpg", crCodeImage: image)
-                
-                self.inputText.resignFirstResponder()
-            }
-        }
         
-    }
-    
-    func drawIconInQrcode(IconName: String, crCodeImage: UIImage) -> UIImage? {
+        //show QRcode without icon
+//        if let resultQrcode = QRcodeManager().showQRcode(dataString: inputUrl, displayView: self.qrCodeResult) {
+//            self.qrCodeResult.image = resultQrcode;
+//        }
         
-        if let iconImage = UIImage(named: IconName) {
-            let qrcodeRect = CGRect(x:0, y:0, width:crCodeImage.size.width,height:crCodeImage.size.height)
-            
-            //開畫布
-            UIGraphicsBeginImageContext(qrcodeRect.size)
-            crCodeImage.draw(in: qrcodeRect)
-            let iconSize = CGSize(width:qrcodeRect.size.width * 0.25,height:qrcodeRect.size.height * 0.25)
-            let x = (qrcodeRect.width - iconSize.width) * 0.5
-            let y = (qrcodeRect.height - iconSize.height) * 0.5
-            iconImage.draw(in: CGRect(x:x, y:y, width:iconSize.width,height:iconSize.height))
-            //關畫布
-            let resultImage = UIGraphicsGetImageFromCurrentImageContext()
-            
-            UIGraphicsEndImageContext()
-            return resultImage
+        //show QRcode with icon
+        let iconImg = UIImage(named: "hk.jpg")
+        if let resultQrcode = QRcodeManager().showQRcode(dataString: inputUrl, displayView: self.qrCodeResult, icon: iconImg!, widthScale: 0.3) {
+            self.qrCodeResult.image = resultQrcode
         }
-        return crCodeImage
     }
     
     func setQrcodeColor(qrCode: CIImage) -> CIFilter{
@@ -69,7 +38,8 @@ class ViewController: UIViewController {
         colorFilter.setValue(qrCode, forKey: "inputImage")
         colorFilter.setValue(CIColor(red: 0, green: 0, blue: 0), forKey: "inputColor0")
         colorFilter.setValue(CIColor(red: 1, green: 1, blue: 1), forKey: "inputColor1")
-        return colorFilter
+        return colorFilter 
     }
+
 }
 
